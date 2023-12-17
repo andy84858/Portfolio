@@ -41,30 +41,28 @@ password = 'password'                                            # password for 
 
 
 def main():
-    attachment_path = None
+    attachment_path = None                                                            # Initialize attachment path as None since there is no attachment in the beginning
     while True:
         command = input("Enter your command:")
         if command == "step1":
-            print("generate report")
-            date_folder_path = new_folder(report_folder_path)
-            attachment_path = new_sheet(read_file_path, date_folder_path)
-            encrypt_excel_file(attachment_path, password)
-            print("report generated")
+            print("generate report")                                                  # Check if step 1 works
+            date_folder_path = new_folder(report_folder_path)                         # Create a new folder to put the new Excel in
+            attachment_path = new_sheet(read_file_path, date_folder_path)             # Call new_sheet function and generate attachment_path for Outlook to read
+            encrypt_excel_file(attachment_path, password)                             # Lock Excel file
+            print("report generated")                                                 # Check if step 1 finished
         elif command == 'step2':
-            if not attachment_path:
+            if not attachment_path:                                                   # If attachment_path is not yet generated, create a new sheet.
                 attachment_path = new_sheet(read_file_path, report_folder_path)
-            send_mail(attachment_path)
+            send_mail(attachment_path)                                                # Send an email with the attachment 
         elif command == 'end':
-            break
+            break                                                                     # Break if finished all steps
 
 
 def new_folder(report_folder_path):
-    date = input('Enter Date: MMDD: -->')
-    # Assign file path
-    path = os.path.join(report_folder_path)
-    date_folder_path = os.path.join(path, date)
-    # Create a new folder and named by date
-    os.makedirs(date_folder_path)
+    date = input('Enter Date: MMDD: -->')                                             # Create a new folder with name in date
+    path = os.path.join(report_folder_path)                                           # Assign file path to put the report in
+    date_folder_path = os.path.join(path, date)                                       # Joint file path and date as a new path to put the new file in
+    os.makedirs(date_folder_path)                                                     # Create a new folder and name by date
     print(date_folder_path)
     return date_folder_path
 
@@ -72,38 +70,38 @@ def new_folder(report_folder_path):
 def new_sheet(read_file_path, date_folder_path):
 
     # read file from "target_file_path"
-    date_range = input('Date range: YYYYMMDD-YYYYMMDD-->: ')
-    read_file_name = f"file_{date_range}_to_send.xlsx"
-    wb_A = load_workbook(f"{read_file_path}/{read_file_name}")
-    ws_A = wb_A.active
+    date_range = input('Date range: YYYYMMDD-YYYYMMDD-->: ')                          # The file to be read is named by date range YYYYMMDD-YYYYMMDD, so enter date range as a searching keyword
+    read_file_name = f"file_{date_range}_to_send.xlsx"                                # Assign the file to be read as a variable
+    wb_A = load_workbook(f"{read_file_path}/{read_file_name}")                        # Read file
+    ws_A = wb_A.active                                                                # Open file in default page(Suppose there is only one page)
 
     # Create new Excel file
     wb_B = Workbook()
     ws_B = wb_B.active
-    ws_B.title = "checking list"
+    ws_B.title = "checking list"                                                      # Name sheet title
 
     # Create heads
     ws_B.append(["No.", "Project Name", "recipients", "zipcode", "address", "numbers of package", "sender", "sender address", "Note"])
 
-    # Read and process data with filtered terms
-    transfer_cases = []  # List for saving “transfer case”
-    self_managed_cases = []  # List for saving “self-managed case”
+    # Read and process data with filtered terms. In this case, the terms to be filtered are 'transfer_cases' and 'self_managed_cases'
+    transfer_cases = []                                                                                      # List for saving “transfer case”
+    self_managed_cases = []                                                                                  # List for saving “self-managed case”
     for i in range(2, ws_A.max_row + 1):
         row_data = []
-        if ws_A.cell(row=i, column=2).value == "transfer case":
+        if ws_A.cell(row=i, column=2).value == "transfer case":                                              # The filtered terms exist in column2 in the original file, this column filters the term 'transfer case'
             row_data = [
-                "",  # No. will be added later
-                f"Warm Service({ws_A.cell(row=i, column=5).value}{ws_A.cell(row=i, column=24).value})",
-                ws_A.cell(row=i, column=12).value,
-                ws_A.cell(row=i, column=14).value,
-                ws_A.cell(row=i, column=15).value,
-                "1",  # numbers of package
-                "XOXO company",
-                "XOXO company's address",
-                "<<FRAGILE>>"
+                "",                                                                                          # No. will be added later
+                f"Warm Service({ws_A.cell(row=i, column=5).value}{ws_A.cell(row=i, column=24).value})",      # Column2 are jointed string from column5 and column24 in original file
+                ws_A.cell(row=i, column=12).value,                                                           # Column3 is derived from column12
+                ws_A.cell(row=i, column=14).value,                                                           # Column4 is derived from column14
+                ws_A.cell(row=i, column=15).value,                                                           # Column5 is derived from column15
+                "1",                                                                                         # column6 is the number of package
+                "XOXO company",                                                                              # Column7 is the company's name
+                "XOXO company's address",                                                                    # Column8 is the company's address
+                "<<FRAGILE>>"                                                                                # Column9 is the note for sending package  
             ]
             transfer_cases.append(row_data)
-        else:
+        else:                                                                                                # If the filtered term is self_managed_cases
             row_data = [
                 "",
                 "Warm Service",
@@ -131,7 +129,7 @@ def new_sheet(read_file_path, date_folder_path):
     return attachment_path
 
 
-def encrypt_excel_file(attachment_path, password):
+def encrypt_excel_file(attachment_path, password):                      # Lock file with password                                                  
     excel_app = client.gencache.EnsureDispatch('Excel.Application')
     workbook = excel_app.Workbooks.Open(attachment_path)
     workbook.Password = password
@@ -148,7 +146,7 @@ def send_mail(attachment_path):
     message.CC = "; ".join(mail_cc)
     message.BCC = '123456@gmail.com'
     message.Subject = 'Testing mail-sending automation'
-    message.Body = 'Dera recipient:\n Please check the attachments, please let me know if you have any problem!\nHave a nice day'
+    message.Body = 'Dear recipient:\n Please check the attachments, and let me know if you have any problems!\n Have a nice day!'
     if attachment_path:
         message.Attachments.Add(attachment_path)
     message.Save()
