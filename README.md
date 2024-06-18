@@ -1,7 +1,8 @@
 # Portfolio: Breakout
 
 
-These two Python files, breakout_extension.py and breakoutgraphics_extension.py, together form a simple game inspired by "Block 130." The game's goal is to break all the blocks on the screen using a bouncing ball, while controlling a paddle to prevent the ball from falling off the game area.
+These two Python files, `breakout_extension.py` and `breakoutgraphics_extension.py`, together form a simple game inspired by "Block 130." 
+The game's goal is to break all the blocks on the screen using a bouncing ball, while controlling a paddle to prevent the ball from falling off the game area.
 
 * Gameplay
 Players use the mouse to control a paddle, catching the ball as it bounces back and forth. The ball breaks blocks when it hits them, scoring points in the process. If the ball hits the screen's edges, it bounces back; however, if it falls off the bottom edge, the player loses a life. If all lives are lost, the game ends. The player wins by breaking all the blocks.
@@ -18,4 +19,4 @@ These files use several Python techniques, including:
 * Core Features
 1. Block Generation: At the beginning of the game, a series of blocks are generated, and they're updated based on various conditions.
 2. Mouse Control: Players use the mouse to move the paddle and start the game.
-3. Anti-Gravity and Special Tools: The game includes special tools that add additional gameplay variations.
+3. Special Tools: The game includes special tools(e.g Anti-Gravity, extended paddle, bigger ball) that add additional gameplay variations.
